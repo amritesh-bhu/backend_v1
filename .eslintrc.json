@@ -1,0 +1,23 @@
+{
+    "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "no-console": 0,
+        "indent": 2,
+        "linebreak-style": [
+            2,
+            "unix"
+        ]
+    },
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "ecmaFeatures": {
+        "modules": true,
+        "experimentalObjectRestSpread": true
+    },
+    "extends": "eslint:recommended"
+}

@@ -10,3 +10,4 @@ export const manager = async (url) => {
         throw new Error(`failed to connect databse at ${url}`)
     }
 }
+

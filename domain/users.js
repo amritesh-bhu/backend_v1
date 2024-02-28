@@ -26,9 +26,9 @@ const hashPassword = (password, salt) => {
 
 const authenticateUser = async ({username, password}) => {
     try {
-        console.log(username, password)
+        // console.log(username, password)
         const user = await userModel.findOne({ username })
-        console.log(user)
+        // console.log(user)
         if (!user) {
             throw new Error('no such user/password pair exist')
         }
@@ -59,7 +59,17 @@ const createUser = async (username, password) => {
     }
 }
 
+const registeredUser = async (userId) =>{
+    try{
+        const user = await userModel.findOne({_id: userId})
+        return user
+    }catch(err){
+        console.log('Error something went wrong getting users')
+    }
+}
+
 export const userDomain = {
     authenticateUser,
-    createUser
+    createUser,
+    registeredUser
 }

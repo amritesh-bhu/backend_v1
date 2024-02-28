@@ -12,8 +12,8 @@ const todosModel = new mongoose.model('todos', todoSchema)
 //     return _id
 // }
 
-const getTodos = async ({ userId }) => {
-    const todos = await todosModel.find({ userId })
+const getTodos = async () => {
+    const todos = await todosModel.find()
     if (!todos) {
         throw new Error('todos with this user does not exist')
     }
@@ -25,10 +25,10 @@ const addNewTodo = async ({ userId, value }) => {
     if (!newTodo) {
         throw new Error('Couldn\'t add new todo to your list')
     }
-    return getTodos({ userId: newTodo.userId })
+    return getTodos()
 }
 
-const editTodo = async ({ _id, value }) => {
+const editTodo = async ({ _id,userId, value }) => {
     
     // const id = convertId(_id)
     // console.log("from edit todo",id)
@@ -39,12 +39,16 @@ const editTodo = async ({ _id, value }) => {
         throw new Error('todos with this id does not exist')
     }
 
+    if (item.userId != userId){
+        throw new Error('you are not authorized to do this action!')
+    }
+
     await todosModel.updateOne({ _id: _id }, { $set: { value: value } })
 
-    return getTodos({ userId: item.userId })
+    return getTodos()
 }
 
-const deleteTodo = async (id) => {
+const deleteTodo = async ({id,userId}) => {
     
     // const id = convertId(_id)
 
@@ -53,9 +57,13 @@ const deleteTodo = async (id) => {
         throw new Error('todos with this id doies not exist')
     }
 
+    if (item.userId != userId){
+        throw new Error('you are not authorized to do this action!')
+    }
+
     await todosModel.deleteOne({ _id: id })
 
-    return getTodos({ userId: item.userId })
+    return getTodos()
 }
 
 

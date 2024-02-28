@@ -9,30 +9,15 @@ const sessionModel = new mongoose.model('sessions', sessionSchema)
 
 
 const createSession = async (userId) => {
-    try {
-        const session = await sessionModel.create({ userId })
-        return session
-    } catch (err) {
-        throw err
-    }
+    return sessionModel.create({ userId });
 }
 
 const getSession = async (sessionId) => {
-    try {
-        const session = await sessionModel.findOne({_id: sessionId })
-        return session
-    } catch (err) {
-        throw err
-    }
+    return sessionModel.findOne({_id: sessionId })
 }
 
 const deleteSession = async (sessionId) => {
-    try {
-        const session = await sessionModel.deleteOne({ _id: sessionId })
-        return session
-    } catch (err) {
-        throw err
-    }
+    return sessionModel.deleteOne({ _id: sessionId })
 }
 
 export const userSession = {

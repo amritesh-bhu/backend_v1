@@ -1,11 +1,11 @@
 import { todosDomain } from "../domain/todos-domain.js"
-import { handleRoute } from "../functions/function.js"
+import { handleRoute, handleUserAccess } from "../functions/function.js"
 
 export const todosRouter = (basepath, app) => {
-    app.get(basepath, handleRoute(async (req, res) => {
+    app.get(basepath, handleRoute(handleUserAccess) ,handleRoute(async (req, res) => {
 
-        const { userId } = req.body
-        const todos = await todosDomain.getTodos({ userId })
+        // const { userId } = req.body
+        const todos = await todosDomain.getTodos()
 
         res.json(todos)
     }))
@@ -22,16 +22,18 @@ export const todosRouter = (basepath, app) => {
 
     app.put(`${basepath}/edittodo`, handleRoute(async (req, res) => {
 
-        const { _id, value } = req.body
+        const { _id,userId, value } = req.body
         console.log("from edit route",req.body)
-        const item = await todosDomain.editTodo({ _id, value })
+        const item = await todosDomain.editTodo({ _id,userId, value })
 
         res.json(item)
     }))
 
     app.delete(`${basepath}/:id`, handleRoute(async (req, res) => {
         console.log("from delete route", req.params.id)
-        const todos = await todosDomain.deleteTodo(req.params.id)
+        const {userId} = req.body
+        const id = req.params.id
+        const todos = await todosDomain.deleteTodo({id,userId})
 
         res.json(todos)
     }))

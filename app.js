@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import { handleRoute } from './functions/function.js';
 import { sessionCheck } from './session-check/sessionCheck.js';
 import { todosRouter } from './route/todos.js';
+// import { redisManager } from './data-manager/redis-conn.js';
 
 const app = express()
 
@@ -19,7 +20,10 @@ app.use(
     })
 )
 
+
 manager(MONGO_URL)
+// redisManager()
+
 authenticateuser("/auth", app)
 
 app.use(handleRoute(sessionCheck))

@@ -62,7 +62,7 @@ const updateSession = async (sessionId,userId,count) =>{
     }
 }
 
-export const redisSession = {
+export const sessionDomain = {
     createSession,
     getSession,
     deleteSession,

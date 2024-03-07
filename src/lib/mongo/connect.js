@@ -1,6 +1,6 @@
 import { mongoose } from "mongoose";
 
-export const manager = async (url) => {
+export const connectMongo = async (url) => {
     try {
         const connection = await mongoose.connect(url)
         // console.log(connection)

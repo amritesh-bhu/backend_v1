@@ -1,13 +1,19 @@
 import express from 'express';
 import cors from "cors"
-import { manager } from "./data-manager/manager.js"
 import { HTTP_PORT, MONGO_URL } from "./env/env.js"
-import { authenticateuser } from "./route/auth.js"
+import { authenticateuser } from "./routes/auth.js"
 import cookieParser from 'cookie-parser';
-import { handleRoute } from './functions/function.js';
-import { sessionCheck } from './session-check/sessionCheck.js';
-import { todosRouter } from './route/todos.js';
-// import { redisManager } from './data-manager/redis-conn.js';
+import { todosRouter } from './routes/todos.js';
+import { handleRoute } from './lib/middlewares/handle-route.js';
+import { checkSession } from './domain/session/middleware.js';
+import { connectMongo } from './lib/mongo/connect.js';
+import { rbacRouter } from './routes/rbac.js';
+
+// pre-requisites for app
+// 1. mongo
+connectMongo(MONGO_URL)
+
+// TODO (redis client)
 
 const app = express()
 
@@ -20,15 +26,12 @@ app.use(
     })
 )
 
-
-manager(MONGO_URL)
-// redisManager()
-
 authenticateuser("/auth", app)
 
-app.use(handleRoute(sessionCheck))
+app.use(handleRoute(checkSession))
 
 todosRouter('/todos',app)
+rbacRouter('/rbac',app)
 
 app.use((err, req, res, next) => {
     res.status(500).json({'error': err.message});

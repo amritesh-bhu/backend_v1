@@ -1,12 +1,20 @@
-import { todosDomain } from "../domain/todos-domain.js"
-import { handleRoute, handleUserAccess } from "../functions/function.js"
+import { todosDomain } from "../domain/todos/index.js";
+import { handleRoute } from "../lib/middlewares/handle-route.js";
 
 export const todosRouter = (basepath, app) => {
-    app.get(basepath, handleRoute(handleUserAccess) ,handleRoute(async (req, res) => {
+    app.get(basepath, handleRoute(async (req, res) => {
 
-        // const { userId } = req.body
-        const todos = await todosDomain.getTodos()
+        const { userId } = req.body
+        const todos = await todosDomain.getTodos({userId})
 
+        res.json(todos)
+    }))
+
+    app.post(`${basepath}/sharedid`, handleRoute(async (req,res) =>{
+        const {ids} = req.body
+        console.log('ids',ids)
+        const todos = await todosDomain.getTodosById({ids})
+        // console.log(todos)
         res.json(todos)
     }))
 
@@ -16,7 +24,6 @@ export const todosRouter = (basepath, app) => {
 
         console.log(userId, value)
         const items = await todosDomain.addNewTodo({ userId, value })
-
         res.json(items)
     }))
 

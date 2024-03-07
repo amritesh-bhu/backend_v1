@@ -1,15 +1,11 @@
-/* eslint-disable no-unused-vars */
-import { nanoid } from "nanoid"
-import { redisSession } from "../domain/redis-session.js"
-import { userSession } from "../domain/session.js"
-import { userDomain } from "../domain/users.js"
+import { userDomain } from "../domain/user/index.js"
+import { sessionDomain } from "../domain/session/index.js";
 import { SESSION_NAME } from "../env/env.js"
-import { handleRoute } from "../functions/function.js"
-import { sessionCheck } from "../session-check/sessionCheck.js"
+import { handleRoute } from "../lib/middlewares/handle-route.js";
+import { checkSession } from "../domain/session/middleware.js";
 
 export const authenticateuser = (basepath, app) => {
-
-    app.get(`${basepath}/me`,handleRoute(sessionCheck),handleRoute(async (req, res) => {
+    app.get(`${basepath}/me`,handleRoute(checkSession),handleRoute(async (req, res) => {
         console.log(req.userId)
         if(!req.userId){
             res.status(401).send({msg:"Please login"})
@@ -18,12 +14,8 @@ export const authenticateuser = (basepath, app) => {
     }))
 
     app.delete(`${basepath}/logout`,handleRoute(async (req,res) =>{
-        // console.log(req.userId)
         const sessionId = req.cookies[SESSION_NAME]
-        // console.log("from delete logout route ",sessionId)
-        // const destroySession = await userSession.deleteSession(sessionId)
-        const destroySession = await redisSession.deleteSession(sessionId)
-        // res.cookie(SESSION_NAME, 'None', { secure: true, httpOnly: true, sameSite: 'None', expires: new Date(Date.now() + 5 * 1000) })
+        await sessionDomain.deleteSession(sessionId)
         res.clearCookie(SESSION_NAME)
         res.json({ msg: "you have been logged out" })
     }))
@@ -35,7 +27,7 @@ export const authenticateuser = (basepath, app) => {
         const user = await userDomain.authenticateUser({username, password})
         // console.log("from auth login : ", user)
         // const session = await userSession.createSession(user._id)
-        const session = await redisSession.createSession(user._id.toString(),req.count)
+        const session = await sessionDomain.createSession(user._id.toString(),req.count)
         // console.log(session)
         res.cookie(SESSION_NAME,session,{httpOnly:true,secure:true,sameSite:'None'})
         res.json(user)
